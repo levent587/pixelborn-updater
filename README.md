@@ -1,6 +1,7 @@
 # Pixelborn Updater
 
 A simple tool to automatically download and update the Pixelborn client to the latest version.
+It uses [mirrored versions](https://github.com/levent587/pixelborn-releases-mirror/releases) that are automatically downloaded from the official google Drive link. 
 
 ## Usage
 
@@ -46,4 +47,3 @@ If you prefer to build the updater yourself, follow these steps.
     ```sh
     bun run build
     ```
-    The final `pixelborn-updater.exe` will be located in the `dist` directory.
