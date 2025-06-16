@@ -1,5 +1,7 @@
 # Pixelborn Updater
 
+**Disclaimer:** This project is a fan-made tool and is not officially associated with Pixelborn.
+
 A simple tool to automatically download and update the Pixelborn client to the latest version.
 It uses [mirrored versions](https://github.com/levent587/pixelborn-releases-mirror/releases) that are automatically downloaded from the official google Drive link. 
 
