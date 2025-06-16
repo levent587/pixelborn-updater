@@ -36,4 +36,44 @@ app.get("/api/version", async () => {
   }
 });
 
+app.get("/api/images/en/hash", async () => {
+  const IDENTIFIER = "PBImg";
+  const EN_KEY = "Key/EN/S001.zip";
+  const response = await fetch(`https://archive.org/metadata/${IDENTIFIER}/`);
+  if (!response.ok) {
+    throw new Error(
+      `Status Code is not OK: ${response.status} ${response.statusText}`
+    );
+  }
+
+  try {
+    const metadata = await response.json();
+    const fileMetadata = metadata.files.find(
+      (file: any) => file.name === EN_KEY
+    );
+    if (!fileMetadata) {
+      throw new Error("❌ File metadata not found");
+    }
+    return new Response(
+      JSON.stringify({
+        hash: fileMetadata.md5,
+        downloadUrl: `https://archive.org/download/${IDENTIFIER}/${EN_KEY}`,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("❌ Error:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to get image zip hash." }),
+      {
+        status: 500,
+      }
+    );
+  }
+});
+
 export default app;
