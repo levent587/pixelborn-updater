@@ -13,6 +13,7 @@ setInterval(async () => {
 
 app.get("/api/version", async () => {
   try {
+    console.log("/api/version called");
     const assetInfo: RemoteInfo | null = await getLatestReleaseAssetInfo();
     if (!assetInfo) {
       return new Response(JSON.stringify({ error: "No asset info found" }), {
@@ -37,6 +38,7 @@ app.get("/api/version", async () => {
 });
 
 app.get("/api/images/en/hash", async () => {
+  console.log("/api/images/en/hash called");
   const IDENTIFIER = "PBImg";
   const EN_KEY = "Key/EN/S001.zip";
   const response = await fetch(`https://archive.org/metadata/${IDENTIFIER}/`);
