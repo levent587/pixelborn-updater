@@ -47,54 +47,7 @@ async function saveConfig(config: PatcherConfig): Promise<void> {
 async function downloadAndUnzip(url: string): Promise<void> {
   console.log("🌐 Downloading new version...");
 
-  const userAgent =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
-
-  const initialResponse = await fetch(url, {
-    headers: { "User-Agent": userAgent },
-  });
-
-  if (!initialResponse.ok) {
-    throw new Error(`Initial request failed: ${initialResponse.statusText}`);
-  }
-
-  const cookies = initialResponse.headers.getSetCookie();
-  if (!cookies || cookies.length === 0) {
-    throw new Error("Google Drive download cookie not found.");
-  }
-
-  const responseText = await initialResponse.text();
-
-  // Extract url and params (needed for validation)
-
-  const actionMatch = responseText.match(/action="([^"]+)"/);
-  if (!actionMatch || !actionMatch[1]) {
-    throw new Error("Could not find form action URL in HTML response.");
-  }
-  const formActionUrl = actionMatch[1].replace(/&amp;/g, "&");
-
-  const inputs = [
-    ...responseText.matchAll(
-      /<input type="hidden" name="([^"]+)" value="([^"]*)"/g
-    ),
-  ];
-  if (inputs.length === 0) {
-    throw new Error("Could not find hidden input fields in HTML response.");
-  }
-
-  const params = new URLSearchParams();
-  for (const input of inputs) {
-    params.append(input[1], input[2]);
-  }
-
-  const finalDownloadUrl = `${formActionUrl}?${params.toString()}`;
-
-  const response = await fetch(finalDownloadUrl, {
-    headers: {
-      "User-Agent": userAgent,
-      Cookie: cookies.join("; "),
-    },
-  });
+  const response = await fetch(url);
 
   if (!response.ok || !response.body) {
     throw new Error(`Final download failed: ${response.statusText}`);

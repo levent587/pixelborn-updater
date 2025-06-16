@@ -178,3 +178,5 @@ dist
 .env
 
 pixelborn-updater.exe
+
+*.zip
