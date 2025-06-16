@@ -43,7 +43,6 @@ export async function mirror() {
   const fileInfo = await getLatestFileInfoFromDrive();
   const latestVersion = await getLatestVersion();
   if (fileInfo.version === latestVersion) {
-    console.log("✅ No new version detected, skipping...");
     _isMirroring = false;
     return;
   }

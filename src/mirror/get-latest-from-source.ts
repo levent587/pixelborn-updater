@@ -12,7 +12,6 @@ export async function getLatestFileInfoFromDrive() {
   apiEndpoint.searchParams.set("q", `'${GDRIVE_FOLDER_ID}' in parents`);
   apiEndpoint.searchParams.set("fields", "files(id, name)");
 
-  console.log("🔎 Checking Google Drive for the latest version...");
   const response = await fetch(apiEndpoint);
   if (!response.ok) {
     throw new Error(
