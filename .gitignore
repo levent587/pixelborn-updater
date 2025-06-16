@@ -176,3 +176,5 @@ dist
 
 # Environment variables
 .env
+
+pixelborn-updater.exe
