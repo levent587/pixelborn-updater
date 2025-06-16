@@ -28,8 +28,8 @@ If you prefer to build the updater yourself, follow these steps.
 1.  **Clone the repository**
 
     ```sh
-    git clone https://github.com/your-username/your-repo.git
-    cd your-repo
+    git clone https://github.com/levent587/pixelborn-updater
+    cd pixelborn-updater
     ```
 
 2.  **Create the environment file**
