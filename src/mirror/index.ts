@@ -40,22 +40,28 @@ export async function mirror() {
     return;
   }
   _isMirroring = true;
-  const fileInfo = await getLatestFileInfoFromDrive();
-  const latestVersion = await getLatestVersion();
-  if (fileInfo.version === latestVersion) {
+  try {
+    const fileInfo = await getLatestFileInfoFromDrive();
+    const latestVersion = await getLatestVersion();
+    if (fileInfo.version === latestVersion) {
+      _isMirroring = false;
+      return;
+    }
+    await onNewVersion(fileInfo.version);
+    console.log("🔄 Downloading latest version from source...");
+    await downloadFromSource(fileInfo.fileId, fileInfo.filename);
+    console.log("✅ Download complete.");
+    console.log("🔄 Creating release...");
+    await createReleaseAndUploadAsset(fileInfo.version, fileInfo.filename);
+    console.log("✅ Release created.");
+    _latestVersion = fileInfo.version;
+    console.log("🔄 Deleting downloaded file...");
+    await fs.promises.unlink(fileInfo.filename);
+    console.log("✅ File deleted.");
+  } catch (error) {
+    console.error("❌ Error mirroring:", error);
+  } finally {
     _isMirroring = false;
-    return;
+    console.log("🔄 Mirroring complete.");
   }
-  await onNewVersion(fileInfo.version);
-  console.log("🔄 Downloading latest version from source...");
-  await downloadFromSource(fileInfo.fileId, fileInfo.filename);
-  console.log("✅ Download complete.");
-  console.log("🔄 Creating release...");
-  await createReleaseAndUploadAsset(fileInfo.version, fileInfo.filename);
-  console.log("✅ Release created.");
-  _latestVersion = fileInfo.version;
-  console.log("🔄 Deleting downloaded file...");
-  await fs.promises.unlink(fileInfo.filename);
-  console.log("✅ File deleted.");
-  _isMirroring = false;
 }
