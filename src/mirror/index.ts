@@ -58,10 +58,10 @@ export async function mirror() {
     console.log("🔄 Deleting downloaded file...");
     await fs.promises.unlink(fileInfo.filename);
     console.log("✅ File deleted.");
+    console.log("🔄 Mirroring complete.");
   } catch (error) {
     console.error("❌ Error mirroring:", error);
   } finally {
     _isMirroring = false;
-    console.log("🔄 Mirroring complete.");
   }
 }
