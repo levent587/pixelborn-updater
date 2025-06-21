@@ -1,15 +1,18 @@
 import { Hono } from "hono";
-import { mirror } from "./src/mirror";
-import { getLatestReleaseAssetInfo } from "./src/mirror/github-releases";
-import type { RemoteInfo } from "./types";
+import { mirror } from "@pixelborn-updater/mirror";
+import { getLatestReleaseAssetInfo } from "@pixelborn-updater/mirror";
+import type { RemoteInfo } from "@pixelborn-updater/types";
 
 const app = new Hono();
 
-setInterval(async () => {
-  await mirror().catch((error) => {
-    console.error("❌ Error:", error);
-  });
-}, 1000 * 60 * 1); // every 1 minute
+setInterval(
+  async () => {
+    await mirror().catch((error) => {
+      console.error("❌ Error:", error);
+    });
+  },
+  1000 * 60 * 1
+); // every 1 minute
 
 app.get("/api/version", async () => {
   try {
@@ -18,6 +21,7 @@ app.get("/api/version", async () => {
     if (!assetInfo) {
       return new Response(JSON.stringify({ error: "No asset info found" }), {
         status: 500,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -32,6 +36,7 @@ app.get("/api/version", async () => {
       JSON.stringify({ error: "Failed to get remote version info." }),
       {
         status: 500,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -41,14 +46,15 @@ app.get("/api/images/en/hash", async () => {
   console.log("/api/images/en/hash called");
   const IDENTIFIER = "PBImg";
   const EN_KEY = "Key/EN/S001.zip";
-  const response = await fetch(`https://archive.org/metadata/${IDENTIFIER}/`);
-  if (!response.ok) {
-    throw new Error(
-      `Status Code is not OK: ${response.status} ${response.statusText}`
-    );
-  }
 
   try {
+    const response = await fetch(`https://archive.org/metadata/${IDENTIFIER}/`);
+    if (!response.ok) {
+      throw new Error(
+        `Status Code is not OK: ${response.status} ${response.statusText}`
+      );
+    }
+
     const metadata = await response.json();
     const fileMetadata = metadata.files.find(
       (file: any) => file.name === EN_KEY
@@ -73,6 +79,7 @@ app.get("/api/images/en/hash", async () => {
       JSON.stringify({ error: "Failed to get image zip hash." }),
       {
         status: 500,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }

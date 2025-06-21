@@ -6,6 +6,10 @@
     "build": "bun build --compile --target=bun-windows-x64-baseline index.ts --outfile pixelborn-updater.exe",
     "start": "bun run server.ts"
   },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
