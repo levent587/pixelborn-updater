@@ -21,17 +21,26 @@ export async function getLatestVersion() {
   return _latestVersion;
 }
 
+// TODO move into separate package
+async function sendWebhook(content: string) {
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    });
+  } catch (error) {
+    console.error("❌ Error sending webhook:", error);
+  }
+}
+
 async function onNewVersion(version: string) {
   console.log("New version detected:", version);
-  await fetch(WEBHOOK_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      content: `New version detected: ${version}`,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  await sendWebhook(`New version detected: ${version}`);
+}
+
+async function onCriticalError(error: Error) {
+  console.error("Critical error:", error);
+  await sendWebhook(`Critical error: ${error.message}`);
 }
 
 export async function mirror() {
@@ -61,6 +70,7 @@ export async function mirror() {
     console.log("🔄 Mirroring complete.");
   } catch (error) {
     console.error("❌ Error mirroring:", error);
+    await onCriticalError(error as Error);
   } finally {
     _isMirroring = false;
   }
