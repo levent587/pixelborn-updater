@@ -1,9 +1,19 @@
-export type PatcherConfig = {
-  version: string;
-  executablePath: string | null;
-  imageZipHash: string | null;
-  cardImageLanguage?: string;
-};
+import { z } from "zod";
+
+export const LanguageCodeSchema = z.enum(["en", "fr", "de", "es", "it", "jp"]);
+
+export type LanguageCode = z.infer<typeof LanguageCodeSchema>;
+
+export const PatcherConfigSchema = z.object({
+  version: z.string(),
+  executablePath: z.string().nullable(),
+  imageZipHash: z.string().nullable(),
+  cardImageLanguage: LanguageCodeSchema,
+  autoLaunch: z.boolean(),
+  autoLaunchDelay: z.number().min(1000).max(10000),
+});
+
+export type PatcherConfig = z.infer<typeof PatcherConfigSchema>;
 
 export type RemoteInfo = {
   version: string;
@@ -13,33 +23,4 @@ export type RemoteInfo = {
 export type ImageZipInfo = {
   hash: string;
   downloadUrl: string;
-};
-
-export type PatchState =
-  | "idle"
-  | "checking-versions"
-  | "update-available"
-  | "no-update-needed"
-  | "downloading-game"
-  | "extracting-game"
-  | "checking-images"
-  | "downloading-images"
-  | "extracting-images"
-  | "complete"
-  | "error";
-
-export type PatchProgress = {
-  phase: "game" | "images" | null;
-  percent: number;
-  downloadedBytes: number;
-  totalBytes: number;
-  speed: number; // MB/s
-  eta: number; // seconds
-};
-
-export type UpdateCheckResult = {
-  gameUpdateAvailable: boolean;
-  imageUpdateAvailable: boolean;
-  currentVersion: string;
-  latestVersion: string;
 };
