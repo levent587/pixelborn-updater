@@ -8,8 +8,8 @@ Pixelborn Updater is a Windows desktop app that automatically installs and keeps
 
 ## Download & Installation
 
-1. Visit the [Releases page](https://github.com/levent587/pixelborn-updater/releases).
-2. Download the latest `pixelborn-updater-setup.exe`.
+1. Go to the [latest release](https://github.com/levent587/pixelborn-updater/releases/tag/v0.4.0).
+2. Download the `pixelborn-updater-x.x.x-setup.exe` (Not the .exe.blockmap).
 3. Run the installer. A desktop shortcut will be created automatically.
 
 The updater will handle all future updates for you, no manual downloads required.
