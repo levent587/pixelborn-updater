@@ -24,7 +24,7 @@ export function LatestVersionBadge({
   isLoading: boolean;
 }) {
   return (
-    <Badge className="bg-orange-500 hover:bg-orange-600 text-xs">
+    <Badge className="bg-orange-500/90 hover:bg-orange-600/90 text-xs">
       Latest: {isLoading ? <BadgeSkeleton /> : latestVersion}
     </Badge>
   );

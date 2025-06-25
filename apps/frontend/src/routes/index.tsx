@@ -8,13 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DownloadCloud,
-  Globe,
-  AlertTriangle,
-  RotateCcw,
-  Play,
-} from "lucide-react";
+import { DownloadCloud, Globe } from "lucide-react";
 import { useGameVersion } from "@/hooks/use-game-version";
 import {
   LocalVersionBadge,
@@ -31,14 +25,12 @@ import { useCardImageVersion } from "@/hooks/use-card-image-version";
 import { cn } from "@/lib/utils";
 import { useUpdateGame } from "@/hooks/use-update-game";
 import { useEffect } from "react";
-import { DownloadProgress } from "@/components/download-progress";
 import { useUpdateImages } from "@/hooks/use-update-images";
-import { LaunchCard } from "@/components/launch-card";
-import { AutoLaunchCheckbox } from "@/components/auto-launch-checkbox";
-import { Button } from "@/components/ui/button";
-import { launchGame } from "@/lib/launch-game";
+import { LaunchCardContent } from "@/components/launch-card";
 import { RouterErrorComponent } from "@/components/error-boundary";
 import { useHandlePatcherUpdate } from "@/hooks/use-handle-patcher-update";
+import { ErrorCardContent } from "@/components/error-card";
+import { ProgressCardContent } from "@/components/progress-card";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -159,6 +151,11 @@ function App() {
     }
   }, [needsGameUpdate, needsImageUpdate, isChecking]);
 
+  const displayDownloadProgressCard = isUpdating;
+  const displayLaunchCard =
+    isChecking || (!isUpdating && latestVersion !== undefined);
+  const displayErrorCard = getPatchState() === "patch-error";
+
   return (
     <div className="h-screen p-3 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a]">
       <div className="max-w-3xl mx-auto gap-4 h-full flex flex-col">
@@ -240,150 +237,54 @@ function App() {
         </div>
 
         {/* Progress/Launch Card Container */}
-        <div className="relative min-h-44 overflow-hidden">
-          <AnimatePresence mode="wait">
-            {isUpdating && (
-              <motion.div
-                key="progress-card"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute inset-0"
-              >
-                <Card className="h-full bg-slate-800/50 border-slate-700">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-slate-200 flex items-center gap-2 text-base">
-                        Download Progress
-                      </CardTitle>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="flex items-center space-x-2"
-                      >
-                        <AutoLaunchCheckbox />
-                      </motion.div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <motion.span
-                          key={getPatchState()}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-slate-300"
-                        >
-                          <GameStatusText patchState={getPatchState()} />
-                        </motion.span>
-                        <motion.span
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{
-                            duration: 0.5,
-                            repeat: Number.POSITIVE_INFINITY,
-                          }}
-                          className="text-slate-400"
-                        >
-                          {Math.round(currentProgress)}%
-                        </motion.span>
-                      </div>
-                      <DownloadProgress
-                        currentSpeed={currentSpeed}
-                        currentEta={currentEta}
-                        currentProgress={currentProgress}
-                        currentBytes={currentBytes}
-                        totalBytes={totalBytes}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card
+            className={cn(
+              "min-h-44 bg-slate-800/50 border-slate-700 flex flex-col justify-between",
+              getPatchState() === "patch-error" && "border-red-500/20"
             )}
+          >
+            <AnimatePresence mode="wait">
+              {displayDownloadProgressCard && (
+                <ProgressCardContent
+                  key="progress"
+                  patchState={getPatchState()}
+                  currentProgress={currentProgress}
+                  currentSpeed={currentSpeed}
+                  currentEta={currentEta}
+                  currentBytes={currentBytes}
+                  totalBytes={totalBytes}
+                />
+              )}
 
-            {getPatchState() !== "patch-error" &&
-              !isUpdating &&
-              !isChecking &&
-              latestVersion !== undefined && (
-                <LaunchCard
+              {displayErrorCard && (
+                <ErrorCardContent
+                  key="error"
+                  localVersion={localVersion}
+                  onRetry={() => {
+                    loadLocalVersion();
+                    loadLatestVersion();
+                    loadLatestHash();
+                    loadLocalHash();
+                  }}
+                />
+              )}
+
+              {displayLaunchCard && (
+                <LaunchCardContent
+                  key="launch"
                   currentVersion={localVersion}
                   isChecking={isChecking}
                   patchState={getPatchState()}
                 />
               )}
-
-            {getPatchState() === "patch-error" && (
-              <motion.div
-                key="error-card"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="absolute inset-0"
-              >
-                <Card className="h-full bg-slate-800/50 border-red-500/20">
-                  <CardHeader className="pb-2 flex items-center justify-between">
-                    <CardTitle className="text-slate-200 flex items-center gap-2 text-base">
-                      <AlertTriangle className="w-5 h-5 text-red-500" />
-                      Patch Error
-                    </CardTitle>
-                    <button
-                      onClick={() => {
-                        loadLocalVersion();
-                        loadLatestVersion();
-                        loadLatestHash();
-                        loadLocalHash();
-                      }}
-                      className="hover:bg-slate-700 rounded-md p-2"
-                    >
-                      <RotateCcw className="w-5 h-5 text-red-500" />
-                    </button>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0 }}
-                        className="space-y-1"
-                      >
-                        <p className="text-slate-300 text-sm">
-                          An error occurred during patching.
-                          <br />
-                          You can try again or launch the game with your current
-                          version.
-                        </p>
-                        <p className="text-slate-500 text-xs">
-                          Version {localVersion}
-                        </p>
-                      </motion.div>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button
-                          onClick={() => {
-                            launchGame();
-                          }}
-                          className={cn(
-                            "h-10 transition-colors",
-                            "bg-green-600 hover:bg-green-700 text-white "
-                          )}
-                        >
-                          <Play className="w-4 h-4 mr-2" />
-                          Launch Game
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </Card>
+        </motion.div>
 
         {/* Footer */}
         <motion.div

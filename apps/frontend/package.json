@@ -2,7 +2,7 @@
   "name": "@pixelborn-updater/app",
   "main": "./out/main/index.js",
   "type": "module",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "levent587",
   "repository": {
     "type": "git",
