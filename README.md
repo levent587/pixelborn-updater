@@ -1,53 +1,48 @@
 # Pixelborn Updater
 
-**Disclaimer:** This project is a fan-made tool and is not officially associated with Pixelborn.
+**Disclaimer:** This is a fan-made tool and is not officially associated with Pixelborn.
 
-A simple tool to automatically download and update the Pixelborn client to the latest version.
-It uses [mirrored versions](https://github.com/levent587/pixelborn-releases-mirror/releases) that are automatically downloaded from the official google Drive link. 
+Pixelborn Updater is a Windows desktop app that automatically installs and keeps both the Pixelborn game client and card images up to date.
 
-![image](https://github.com/user-attachments/assets/cda71a6d-1b80-4130-ac61-00d857712591)
+![pixelborn-updater](https://github.com/user-attachments/assets/f8760d9d-feca-46d1-b7b6-8f2ae80bf400)
 
-## Usage
+## Download & Installation
 
-1.  Download the latest `pixelborn-updater.exe` from the project's **Releases** page.
-2.  Place `pixelborn-updater.exe` in the directory where you want to install or update Pixelborn.
-3.  Run `pixelborn-updater.exe`. It will download the latest client if it's missing or update it if a new version is available.
+1. Visit the [Releases page](https://github.com/levent587/pixelborn-updater/releases).
+2. Download the latest `pixelborn-updater-setup.exe`.
+3. Run the installer. A desktop shortcut will be created automatically.
 
-_Optional: Create a shortcut to `pixelborn-updater.exe` on your desktop for easy access._
+The updater will handle all future updates for you, no manual downloads required.
 
 ## Building from Source
 
-If you prefer to build the updater yourself, follow these steps.
+If you prefer to compile the launcher yourself, follow these steps on a Windows machine.
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) (Tested with v1.1.45)
+- Git
+- [Bun](https://bun.sh/) v1.1.45 (tested)
+- Windows 10 or newer
 
 ### Steps
 
-1.  **Clone the repository**
+1. Clone the repository
 
-    ```sh
-    git clone https://github.com/levent587/pixelborn-updater
-    cd pixelborn-updater
-    ```
+   ```sh
+   git clone https://github.com/levent587/pixelborn-updater.git
+   cd pixelborn-updater
 
-2.  **Create the environment file**
-    Copy the example file to create your local configuration.
+   ```
 
-    ```sh
-    cp .env.example .env
-    ```
+2. **Install dependencies**
 
-    > **Note:** Keep the default `API_URL` unless you are self-hosting the backend API.
+   ```sh
+   bun install
+   ```
 
-3.  **Install dependencies**
-
-    ```sh
-    bun install
-    ```
-
-4.  **Build the executable**
-    ```sh
-    bun run build
-    ```
+3. **Build the installer**
+   ```sh
+   cd apps/frontend
+   bun run build:win
+   ```
+   The pixelborn-updater-<version>-setup.exe will be in apps/frontend/dist.
