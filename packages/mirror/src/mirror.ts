@@ -24,10 +24,16 @@ export async function getLatestVersion() {
 // TODO move into separate package
 async function sendWebhook(content: string) {
   try {
-    await fetch(WEBHOOK_URL, {
+    const response = await fetch(WEBHOOK_URL, {
       method: "POST",
       body: JSON.stringify({ content }),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+    if (!response.ok) {
+      throw new Error(`❌ Error sending webhook: ${response.statusText}`);
+    }
   } catch (error) {
     console.error("❌ Error sending webhook:", error);
   }
